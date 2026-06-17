@@ -257,6 +257,19 @@ fabric-foundry-toy-v2-events/
     feature_engineering.py
     train_model.py
 
+  foundry/
+    agent/
+      system_prompt.md
+      sample_questions.md
+    knowledge/
+      maintenance_policy.md
+      escalation_matrix.md
+    tools/
+    evals/
+
+  scripts/
+    export_foundry_snapshot.py
+
   data/
     raw/
       .gitkeep
@@ -265,11 +278,13 @@ fabric-foundry-toy-v2-events/
 
   outputs/
     .gitkeep
-```
+    foundry_machine_risk_snapshot.json
 
-Generated files are intentionally ignored by Git.
+Generated training data and model artifacts are intentionally ignored by Git.
 
 A user should clone the repo, run the scripts, and generate the local data/model outputs themselves.
+
+The foundry/ directory is the beginning of the AI application layer. It does not yet deploy a real Azure AI Foundry agent, but it contains the prompts, grounding documents, and future tool/evaluation structure that will be used to operationalize the predictive model.
 
 ## How to Run
 
@@ -333,6 +348,32 @@ Expected outputs:
 outputs/predictive_maintenance_model_v2.joblib
 outputs/model_metrics_v2.json
 ```
+
+6. Export a Foundry-facing machine risk snapshot
+
+
+After training the model, generate a small operational output file that represents what the AI application layer would consume:
+```text
+python scripts\export_foundry_snapshot.py
+```
+Expected output:
+```text
+outputs/foundry_machine_risk_snapshot.json
+```
+This file represents the handoff from the predictive maintenance model to the future Foundry agent/tool layer.
+
+The snapshot includes fields such as:
+
+machine_id
+plant_id
+failure_probability
+risk_band
+top_risk_factors
+sensor_summary
+recommended_action
+work_order_priority
+
+In a real implementation, this type of output could be stored in a Fabric Lakehouse, Warehouse, SQL endpoint, or operational API. In this lab, it is written to JSON so the next step can focus on the Foundry application pattern.
 
 ## Model Results
 
@@ -433,18 +474,24 @@ This repo demonstrates:
 
 ## What This Does Not Yet Demonstrate
 
-This repo does not yet include:
+This repo now includes the beginning of a Foundry operationalization layer, but it does not yet include a live Azure AI Foundry deployment.
+
+It does not yet demonstrate:
 
 * real Microsoft Fabric deployment
 * real OneLake tables
-* Azure AI Foundry deployment
-* LLM-based explanation or recommendation
+* deployed Azure AI Foundry project
+* deployed Foundry agent
+* live tool calling from an agent
+* LLM-based explanation or recommendation against live model outputs
 * technician feedback capture
 * private evals
 * reinforcement learning
 * production-grade time-series modeling
 
-Those would be natural next steps.
+The current foundry/ directory is intentionally lightweight. It contains the initial agent prompt, sample questions, grounding documents, and placeholder folders for tools and evals.
+
+The next implementation step is to expose the machine-risk snapshot through a small local API and then use that API as the conceptual tool layer for a Foundry agent.
 
 ## Possible Next Version
 
