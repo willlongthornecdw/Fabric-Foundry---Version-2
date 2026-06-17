@@ -493,6 +493,30 @@ The current foundry/ directory is intentionally lightweight. It contains the ini
 
 The next implementation step is to expose the machine-risk snapshot through a small local API and then use that API as the conceptual tool layer for a Foundry agent.
 
+## Local Machine Risk API
+
+This repo includes a small FastAPI app that exposes the machine-risk snapshot as an operational API.
+
+Run the API:
+
+    uvicorn foundry.tools.machine_risk_api:app --reload
+
+Then open:
+
+    http://127.0.0.1:8000/docs
+
+Available endpoints:
+
+    GET /
+    GET /machines
+    GET /machines/high-risk
+    GET /machines/{machine_id}
+    GET /plants/{plant_id}/risk-summary
+
+This API represents the future tool layer for an Azure AI Foundry agent. In a real implementation, the agent would call a secured API, Azure Function, Fabric SQL endpoint, or other operational data service. In this lab, the API reads from:
+
+    outputs/foundry_machine_risk_snapshot.json
+
 ## Possible Next Version
 
 A future V3 could add the AI application layer.
